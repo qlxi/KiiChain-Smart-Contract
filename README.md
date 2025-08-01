@@ -1,14 +1,14 @@
 # KiiChain-Smart-Contract
-Перед тем как workflow сможет успешно выполнить деплой контракта, необходимо выполнить несколько важных шагов:
+Before the workflow can successfully deploy the contract, several important steps must be completed:
 
-1. Настройка секретов в репозитории GitHub
+    Setting up secrets in the GitHub repository
 
-    Перейдите в настройки вашего репозитория: Settings > Secrets and variables > Actions
+    Go to your repository settings: Settings > Secrets and variables > Actions
 
-    Нажмите New repository secret и добавьте следующие обязательные секреты:
+    Click New repository secret and add the following required secrets:
 
         RPC_URL:
-            Для тестовой сети Kii: https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/
+        For the Kii testnet: https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/
 
         DEPLOYER_PRIVATE_KEY:
-            Приватный ключ кошелька для деплоя (в формате 0xabc123...)
+        The private key of the wallet used for deployment (in 0xabc123... format).
