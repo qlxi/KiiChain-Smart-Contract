@@ -14,10 +14,15 @@ jobs:
       - name: Install Foundry
         run: |
           curl -L https://foundry.paradigm.xyz | bash
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          source $HOME/.bashrc
+          export PATH="$HOME/.foundry/bin:$PATH"
+          foundryup
       
-      - name: Setup Foundry
-        run: foundryup
+      - name: Check Foundry version
+        run: |
+          echo "Forge version: $(forge --version)"
+          echo "Cast version: $(cast --version)"
+          echo "Anvil version: $(anvil --version)"
 
       - name: Build
         run: forge build
@@ -28,7 +33,7 @@ jobs:
           --fork-url ${{ secrets.RPC_URL }} \
           --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }}
 
-      - name: Deploy
+      - name: Deploy Contract
         run: |
           forge script script/Counter.s.sol:CounterScript \
           --fork-url ${{ secrets.RPC_URL }} \
