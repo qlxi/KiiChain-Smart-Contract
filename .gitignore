@@ -1,11 +1,10 @@
 # Foundry
 out/
 cache/
-lib/
+remappings.txt
 
-# IDE
-.idea/
-.vscode/
+# Dependencies
+lib/
 
 # Environment
 .env
