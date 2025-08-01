@@ -12,17 +12,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Foundry
-        run: |
-          curl -L https://foundry.paradigm.xyz | bash
-          source $HOME/.bashrc
-          export PATH="$HOME/.foundry/bin:$PATH"
-          foundryup
-      
-      - name: Check Foundry version
-        run: |
-          echo "Forge version: $(forge --version)"
-          echo "Cast version: $(cast --version)"
-          echo "Anvil version: $(anvil --version)"
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Build
         run: forge build
