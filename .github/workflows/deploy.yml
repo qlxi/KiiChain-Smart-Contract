@@ -1,0 +1,36 @@
+name: Deploy Contract
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+      
+      - name: Setup Foundry
+        run: foundryup
+
+      - name: Build
+        run: forge build
+
+      - name: Run Simulation
+        run: |
+          forge script script/Counter.s.sol:CounterScript \
+          --fork-url ${{ secrets.RPC_URL }} \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+
+      - name: Deploy
+        run: |
+          forge script script/Counter.s.sol:CounterScript \
+          --fork-url ${{ secrets.RPC_URL }} \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          --broadcast
