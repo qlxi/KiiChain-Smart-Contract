@@ -18,12 +18,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          forge install foundry-rs/forge-std --no-commit
+          forge install foundry-rs/forge-std
           forge remappings > remappings.txt
 
-      - name: Build
-        run: |
-          forge build
+      - name: Build contract
+        run: forge build
+
+      - name: Run tests (optional)
+        run: forge test
 
       - name: Run Simulation
         run: |
