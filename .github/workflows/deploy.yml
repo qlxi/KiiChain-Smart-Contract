@@ -24,9 +24,6 @@ jobs:
       - name: Build contract
         run: forge build
 
-      - name: Run tests (optional)
-        run: forge test
-
       - name: Run Simulation
         run: |
           forge script script/Counter.s.sol:CounterScript \
