@@ -1,11 +1,11 @@
-name: Deploy Contract Every Minute
+name: Deploy Contract
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '* * * * *'  # Every minute
+    - cron: '0 0 * * *'  # Every day at 00:00 UTC
 
 jobs:
   deploy:
