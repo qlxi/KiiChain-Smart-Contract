@@ -26,12 +26,6 @@ jobs:
       - name: Build contract
         run: forge build
 
-      - name: Run Simulation
-        run: |
-          forge script script/Counter.s.sol:CounterScript \
-          --fork-url ${{ secrets.RPC_URL }} \
-          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-
       - name: Deploy Contract
         run: |
           forge script script/Counter.s.sol:CounterScript \
