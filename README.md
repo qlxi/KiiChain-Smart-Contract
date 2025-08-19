@@ -1,14 +1,11 @@
-# KiiChain-Smart-Contract
-Before the workflow can successfully deploy the contract, several important steps must be completed:
+## KiiChain Smart Contract
 
-    Setting up secrets in the GitHub repository
+To allow the GitHub Actions workflow to deploy your KiiChain Smart Contract, you need to set up secrets in your repository:
 
-    Go to your repository settings: Settings > Secrets and variables > Actions
+1. Go to **Settings > Secrets and variables > Actions** in your GitHub repository.
+2. Click **New repository secret** and add the following secrets:
 
-    Click New repository secret and add the following required secrets:
+   - **DEPLOYER_PRIVATE_KEY**  
+     The private key of the wallet that will be used for deployment.  
+     ⚠️ Make sure this is a testnet wallet and **never expose your private key in code**.
 
-        RPC_URL:
-        For the Kii testnet: https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/
-
-        DEPLOYER_PRIVATE_KEY:
-        The private key of the wallet used for deployment (in 0xabc123... format).
