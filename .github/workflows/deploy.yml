@@ -1,11 +1,11 @@
-name: Deploy Contract Every Hour
+name: Deploy Contract
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '30 * * * *'  # Every hour at minute 0 (e.g., 12:00, 13:00, etc.)
+    - cron: '30 * * * *'  # Every hour at minute 30
 
 jobs:
   deploy:
@@ -29,6 +29,6 @@ jobs:
       - name: Deploy Contract
         run: |
           forge script script/Counter.s.sol:CounterScript \
-          --fork-url ${{ secrets.RPC_URL }} \
+          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
           --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
           --broadcast
