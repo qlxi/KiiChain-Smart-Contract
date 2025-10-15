@@ -5,61 +5,64 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'  # каждые 12 часов
+    - cron: '0 */12 * * *'  # Every 12 hours
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: stable
+          version: nightly
 
-      - name: Initialize clean Foundry project
+      - name: Install dependencies
         run: |
-          rm -rf src script out lib foundry.toml remappings.txt
-          forge init . --force
-          rm -rf src
+          forge install foundry-rs/forge-std
+          forge remappings > remappings.txt
+
+      - name: Create contract file
+        run: |
+          mkdir -p src
+          cat > src/Counter.sol << 'EOF'
+          pragma solidity ^0.8.13;
+
+          contract X1 {
+              uint256 public a;
+
+              function b(uint256 c) public {
+                  a = c;
+              }
+
+              function d() public {
+                  a++;
+              }
+
+              function e() public view returns (uint256) {
+                  return a;
+              }
+          }
+          EOF
+
+      - name: Create script file
+        run: |
           mkdir -p script
-
-      - name: Create obfuscated Solidity contract
-        run: |
-          cat > script/DeployObfuscated.s.sol <<'EOF'
-          // SPDX-License-Identifier: UNLICENSED
+          cat > script/Counter.s.sol << 'EOF'
           pragma solidity ^0.8.13;
 
           import {Script, console} from "forge-std/Script.sol";
+          import {X1} from "../src/Counter.sol";
 
-          contract X1 {
-              uint256 private z1;
-
-              function A(uint256 B) public {
-                  z1 = B;
-              }
-
-              function B1() public {
-                  unchecked { z1++; }
-              }
-
-              function C1() public view returns (uint256) {
-                  return z1;
-              }
-          }
-
-          contract Y1 is Script {
-              X1 private x;
+          contract CounterScript is Script {
+              X1 public x;
 
               function setUp() public {}
 
               function run() public {
                   vm.startBroadcast();
                   x = new X1();
-                  console.log("✅ Deployed obfuscated contract at:", address(x));
                   vm.stopBroadcast();
               }
           }
@@ -69,10 +72,8 @@ jobs:
         run: forge build
 
       - name: Deploy Contract
-        env:
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
         run: |
-          forge script script/DeployObfuscated.s.sol:Y1 \
-            --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-            --private-key $DEPLOYER_PRIVATE_KEY \
-            --broadcast
+          forge script script/Counter.s.sol:CounterScript \
+          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          --broadcast
