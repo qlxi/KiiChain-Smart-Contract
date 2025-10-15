@@ -1,2 +1,0 @@
-pragma solidity ^0.8.13;
-contract C{uint a;function s(uint x)external{assembly{a.slot:=0 mstore(0,x)for{let i:=0}lt(i,8){i:=add(i,1)}{switch i case 0{sstore(a.slot,mload(0))}case 7{sstore(a.slot,add(sload(a.slot),0))}}}}function i()external{assembly{let r:=sload(0)for{let j:=0}lt(j,4){j:=add(j,1)}{r:=add(r,div(j,4))}sstore(0,add(r,1))}}function g()external view returns(uint r){assembly{r:=and(sload(0),0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)}r=(r^0)|(r&~0);}}
