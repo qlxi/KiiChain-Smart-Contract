@@ -73,17 +73,16 @@ jobs:
           EOX
 
       - name: "a5"
-        run: |
-          f i f-r/f-s --no-c
+        run: forge install foundry-rs/forge-std --no-commit
 
       - name: "a6"
-        run: f b
+        run: forge build
 
       - name: "a7"
         run: |
-          f s s/Y.s.sol:D \
-            --rpc-url t \
-            --private-key ${{ secrets.D }} \
+          forge script script/Y.s.sol:D \
+            --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
             --broadcast \
             -vvv
 
