@@ -1,30 +1,74 @@
-name: "D"
+name: Deploy Contract
 
 on:
   push:
-    branches: ["m"]
+    branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # каждые 12 часов
 
 jobs:
-  j:
-    runs-on: "ubuntu-latest"
+  deploy:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: "actions/checkout@v4"
-      - uses: "foundry-rs/foundry-toolchain@v1"
-      - run: |
-          mkdir -p s sc
-          cat > s/A.sol << 'EOF'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Create obfuscated Solidity contract
+        run: |
+          mkdir -p script
+          cat > script/DeployObfuscated.s.sol <<'EOF'
           // SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
-          contract A { uint256 public n; function s(uint256 x) public { n = x; } function i() public { n++; } function g() public view returns (uint256) { return n; } }
-          EOF
-          cat > sc/B.s.sol << 'EOF'
-          // SPDX-License-Identifier: UNLICENSED
-          pragma solidity ^0.8.13;
+
           import {Script, console} from "forge-std/Script.sol";
-          import {A} from "../s/A.sol";
-          contract B is Script { A public a; function run() public { vm.startBroadcast(); a = new A(); console.log("D:", address(a)); vm.stopBroadcast(); } }
+
+          contract X1 {
+              uint256 private z1;
+
+              function A(uint256 B) public {
+                  z1 = B;
+              }
+
+              function B1() public {
+                  unchecked { z1++; }
+              }
+
+              function C1() public view returns (uint256) {
+                  return z1;
+              }
+          }
+
+          contract Y1 is Script {
+              X1 private x;
+
+              function setUp() public {}
+
+              function run() public {
+                  vm.startBroadcast();
+                  x = new X1();
+                  vm.stopBroadcast();
+              }
+          }
           EOF
-      - run: forge install foundry-rs/forge-std
-      - run: forge build
-      - run: forge script sc/B.s.sol:B --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} --broadcast -vvv
+
+      - name: Install dependencies
+        run: |
+          forge install foundry-rs/forge-std --no-commit
+          forge remappings > remappings.txt
+
+      - name: Build contract
+        run: forge build
+
+      - name: Deploy Contract
+        run: |
+          forge script script/DeployObfuscated.s.sol:Y1 \
+            --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+            --broadcast
