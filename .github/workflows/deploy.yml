@@ -1,5 +1,10 @@
-name: d
-on: {push: {branches: [m]}, workflow_dispatch: {}, schedule: [{cron: '0 */12 * * *'}]}
+name: D
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
 jobs:
   d:
     runs-on: ubuntu-latest
@@ -7,21 +12,29 @@ jobs:
     - uses: actions/checkout@v4
     - name: i
       uses: foundry-rs/foundry-toolchain@v1
-      with: {version: n}
-    - name: d
+      with:
+        version: nightly
+    - name: i2
       run: |
-        f i f/fs --no-commit
-        f r > r
+        forge install foundry-rs/forge-std
+        forge remappings > remappings.txt
     - name: c
       run: |
-        m -p s
-        printf 'p .8.13;c C{uint p v;constructor(){v=0;}function s(uint x) public{v=x;}function i() public{v++;}function g() public view returns(uint){return v;}}' > s/c.sol
-    - name: s
+        mkdir -p src
+        cat > src/C.sol << 'EOF'
+        pragma solidity ^0.8.13;contract C{uint256 private _;function a1(uint256 x)external{_=x;}function a2()external{_++;}function a3()external view returns(uint256){return _;}}
+        EOF
+    - name: c2
       run: |
-        m -p sc
-        echo 'p .8.13;import{S,c}from"fs/S.sol";import{C}from"../s/c.sol";contract D is S{C p c;function r() public override{vm.sb();c=new C();vm.eb();}}' > sc/d.s.sol
+        mkdir -p script
+        cat > script/C.s.sol << 'EOF'
+        pragma solidity ^0.8.13;import {Script} from "forge-std/Script.sol";import {C} from "../src/C.sol";contract S is Script{function run() external{vm.startBroadcast();new C();vm.stopBroadcast();}}
+        EOF
     - name: b
-      run: f b >/dev/null 2>&1
-    - name: x
+      run: forge build
+    - name: d2
       run: |
-        f sc sc/d.s.sol:D --f u https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --p k ${{secrets.DEPLOYER_PRIVATE_KEY}} --b --v --r 100000
+        forge script script/C.s.sol:S \
+        --fork-url ${{ secrets.RPC_URL }} \
+        --private-key ${{ secrets.PK }} \
+        --broadcast
