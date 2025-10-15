@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '30 * * * *'  # Every hour at minute 30
+    - cron: '0 */12 * * *'  # Every 12 hours
 
 jobs:
   deploy:
