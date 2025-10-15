@@ -22,7 +22,7 @@ jobs:
       run: |
         mkdir -p src
         cat > src/C.sol << 'EOF'
-        pragma solidity ^0.8.13;contract C{uint256 private _;function a1(uint256 x)external{_=x;}function a2()external{_++;}function a3()external view returns(uint256){return _;}}
+        pragma solidity ^0.8.13;contract C{uint256 private __;function a1(uint256 x)external{__=x;}function a2()external{__++;}function a3()external view returns(uint256){return __;}}
         EOF
     - name: c2
       run: |
