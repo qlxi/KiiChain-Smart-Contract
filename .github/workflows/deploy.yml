@@ -1,79 +1,27 @@
-name: Deploy Contract
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */12 * * *'  # Every 12 hours
-
+name: d
+on: {push: {branches: [m]}, workflow_dispatch: {}, schedule: [{cron: '0 */12 * * *'}]}
 jobs:
-  deploy:
+  d:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: |
-          forge install foundry-rs/forge-std
-          forge remappings > remappings.txt
-
-      - name: Create contract file
-        run: |
-          mkdir -p src
-          cat > src/Counter.sol << 'EOF'
-          pragma solidity ^0.8.13;
-
-          contract X1 {
-              uint256 public a;
-
-              function b(uint256 c) public {
-                  a = c;
-              }
-
-              function d() public {
-                  a++;
-              }
-
-              function e() public view returns (uint256) {
-                  return a;
-              }
-          }
-          EOF
-
-      - name: Create script file
-        run: |
-          mkdir -p script
-          cat > script/Counter.s.sol << 'EOF'
-          pragma solidity ^0.8.13;
-
-          import {Script, console} from "forge-std/Script.sol";
-          import {X1} from "../src/Counter.sol";
-
-          contract CounterScript is Script {
-              X1 public x;
-
-              function setUp() public {}
-
-              function run() public {
-                  vm.startBroadcast();
-                  x = new X1();
-                  vm.stopBroadcast();
-              }
-          }
-          EOF
-
-      - name: Build contract
-        run: forge build
-
-      - name: Deploy Contract
-        run: |
-          forge script script/Counter.s.sol:CounterScript \
-          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-          --broadcast
+    - uses: actions/checkout@v4
+    - name: i
+      uses: foundry-rs/foundry-toolchain@v1
+      with: {version: n}
+    - name: d
+      run: |
+        f i f/fs --no-commit
+        f r > r
+    - name: c
+      run: |
+        m -p s
+        printf 'p .8.13;c C{uint p v;constructor(){v=0;}function s(uint x) public{v=x;}function i() public{v++;}function g() public view returns(uint){return v;}}' > s/c.sol
+    - name: s
+      run: |
+        m -p sc
+        echo 'p .8.13;import{S,c}from"fs/S.sol";import{C}from"../s/c.sol";contract D is S{C p c;function r() public override{vm.sb();c=new C();vm.eb();}}' > sc/d.s.sol
+    - name: b
+      run: f b >/dev/null 2>&1
+    - name: x
+      run: |
+        f sc sc/d.s.sol:D --f u https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --p k ${{secrets.DEPLOYER_PRIVATE_KEY}} --b --v --r 100000
