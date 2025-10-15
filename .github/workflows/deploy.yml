@@ -18,11 +18,17 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: stable
+
+      - name: Initialize clean Foundry project
+        run: |
+          rm -rf src script out lib foundry.toml remappings.txt
+          forge init --no-commit
+          rm -rf src
+          mkdir -p script
 
       - name: Create obfuscated Solidity contract
         run: |
-          mkdir -p script
           cat > script/DeployObfuscated.s.sol <<'EOF'
           // SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
@@ -58,17 +64,14 @@ jobs:
           }
           EOF
 
-      - name: Install dependencies
-        run: |
-          forge install foundry-rs/forge-std
-          forge remappings > remappings.txt
-
       - name: Build contract
         run: forge build
 
       - name: Deploy Contract
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
         run: |
           forge script script/DeployObfuscated.s.sol:Y1 \
             --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+            --private-key $DEPLOYER_PRIVATE_KEY \
             --broadcast
