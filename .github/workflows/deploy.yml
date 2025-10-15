@@ -12,15 +12,19 @@ jobs:
       - uses: "actions/checkout@v4"
       - uses: "foundry-rs/foundry-toolchain@v1"
       - run: |
-          mkdir s sc
-          echo '// SPDX-License-Identifier: UNLICENSED
+          mkdir -p s sc
+          cat > s/A.sol << 'EOF'
+          // SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
-          contract K{uint256 p;function s(uint256 x)public{p=x;}function i()public{p++;}function g()public view returns(uint256){return p;}}' > s/K.sol
-          echo '// SPDX-License-Identifier: UNLICENSED
+          contract A { uint256 public n; function s(uint256 x) public { n = x; } function i() public { n++; } function g() public view returns (uint256) { return n; } }
+          EOF
+          cat > sc/B.s.sol << 'EOF'
+          // SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
-          import {Script,console} from "forge-std/Script.sol";
-          import {K} from "../s/K.sol";
-          contract L is Script{K k;function r() public{vm.startBroadcast();k=new K();console.log("A:",address(k));vm.stopBroadcast();}}' > sc/M.s.sol
+          import {Script, console} from "forge-std/Script.sol";
+          import {A} from "../s/A.sol";
+          contract B is Script { A public a; function run() public { vm.startBroadcast(); a = new A(); console.log("D:", address(a)); vm.stopBroadcast(); } }
+          EOF
       - run: forge install foundry-rs/forge-std
       - run: forge build
-      - run: forge script sc/M.s.sol:L --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} --broadcast
+      - run: forge script sc/B.s.sol:B --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} --broadcast -vvv
