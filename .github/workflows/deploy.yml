@@ -23,7 +23,7 @@ jobs:
       - name: Initialize clean Foundry project
         run: |
           rm -rf src script out lib foundry.toml remappings.txt
-          forge init .
+          forge init . --force
           rm -rf src
           mkdir -p script
 
@@ -59,7 +59,7 @@ jobs:
               function run() public {
                   vm.startBroadcast();
                   x = new X1();
-                  console.log("Deployed address:", address(x));
+                  console.log("✅ Deployed obfuscated contract at:", address(x));
                   vm.stopBroadcast();
               }
           }
