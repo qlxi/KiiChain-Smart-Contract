@@ -60,7 +60,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          forge install foundry-rs/forge-std --no-commit
+          forge install foundry-rs/forge-std
           forge remappings > remappings.txt
 
       - name: Build contract
