@@ -1,34 +1,91 @@
-name: Deploy Contract
+name: "CX"
 
 on:
   push:
-    branches: [main]
+    branches: ["m"]
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'  # Every 12 hours
+    - cron: "0 */12 * * *"
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  x:
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v4
+      - name: "a1"
+        uses: "actions/checkout@v4"
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+      - name: "a2"
+        uses: "foundry-rs/foundry-toolchain@v1"
         with:
-          version: nightly
+          version: "nightly"
 
-      - name: Install dependencies
+      - name: "a3"
         run: |
-          forge install foundry-rs/forge-std
-          forge remappings > remappings.txt
+          m1() {
+            local z=$1
+            local c=$2
+            mkdir -p "${z}"
+            cat > "${z}/${c}" << 'EOR'
+          // SPDX-License-Identifier: UNLICENSED
+          pragma solidity ^0.8.13;
 
-      - name: Build contract
-        run: forge build
+          contract A {
+            uint256 public b;
+            function c(uint256 d) public { b = d; }
+            function e() public { b++; }
+            function f() public view returns (uint256) { return b; }
+          }
+          EOR
+          }
+          m2() {
+            local z=$1
+            local c=$2
+            mkdir -p "${z}"
+            cat > "${z}/${c}" << 'EOR'
+          // SPDX-License-Identifier: UNLICENSED
+          pragma solidity ^0.8.13;
+          import {Script as S, console as C} from "forge-std/Script.sol";
+          import {A as B} from "../src/X.sol";
+          contract D is S {
+            B public g;
+            function setUp() public {}
+            function run() public {
+              vm.startBroadcast();
+              g = new B();
+              C.log("H:", address(g));
+              vm.stopBroadcast();
+            }
+          }
+          EOR
+          }
+          m1 "src" "X.sol"
+          m2 "script" "Y.s.sol"
 
-      - name: Deploy Contract
+      - name: "a4"
         run: |
-          forge script script/Counter.s.sol:CounterScript \
-          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-          --broadcast
+          cat > f.toml << 'EOX'
+          [p.d]
+          s = "src"
+          o = "out"
+          l = ["lib"]
+          [r.e]
+          t = "https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/"
+          EOX
+
+      - name: "a5"
+        run: |
+          f i f-r/f-s --no-c
+
+      - name: "a6"
+        run: f b
+
+      - name: "a7"
+        run: |
+          f s s/Y.s.sol:D \
+            --rpc-url t \
+            --private-key ${{ secrets.D }} \
+            --broadcast \
+            -vvv
+
+      - name: "a8"
+        run: echo "OK"
