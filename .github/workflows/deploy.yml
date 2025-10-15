@@ -1,40 +1,79 @@
-name: D
+name: Deploy Contract
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */12 * * *'  # Every 12 hours
+
 jobs:
-  d:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: i
-      uses: foundry-rs/foundry-toolchain@v1
-      with:
-        version: nightly
-    - name: i2
-      run: |
-        forge install foundry-rs/forge-std
-        forge remappings > remappings.txt
-    - name: c
-      run: |
-        mkdir -p src
-        cat > src/C.sol << 'EOF'
-        pragma solidity ^0.8.13;contract C{uint256 private __;function a1(uint256 x)external{__=x;}function a2()external{__++;}function a3()external view returns(uint256){return __;}}
-        EOF
-    - name: c2
-      run: |
-        mkdir -p script
-        cat > script/C.s.sol << 'EOF'
-        pragma solidity ^0.8.13;import {Script} from "forge-std/Script.sol";import {C} from "../src/C.sol";contract S is Script{function run() external{vm.startBroadcast();new C();vm.stopBroadcast();}}
-        EOF
-    - name: b
-      run: forge build
-    - name: d2
-      run: |
-        forge script script/C.s.sol:S \
-        --fork-url ${{ secrets.RPC_URL }} \
-        --private-key ${{ secrets.PK }} \
-        --broadcast
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: |
+          forge install foundry-rs/forge-std
+          forge remappings > remappings.txt
+
+      - name: Create contract file
+        run: |
+          mkdir -p src
+          cat > src/Counter.sol << 'EOF'
+          pragma solidity ^0.8.13;
+
+          contract X1 {
+              uint256 public a;
+
+              function b(uint256 c) public {
+                  a = c;
+              }
+
+              function d() public {
+                  a++;
+              }
+
+              function e() public view returns (uint256) {
+                  return a;
+              }
+          }
+          EOF
+
+      - name: Create script file
+        run: |
+          mkdir -p script
+          cat > script/Counter.s.sol << 'EOF'
+          pragma solidity ^0.8.13;
+
+          import {Script, console} from "forge-std/Script.sol";
+          import {X1} from "../src/Counter.sol";
+
+          contract CounterScript is Script {
+              X1 public x;
+
+              function setUp() public {}
+
+              function run() public {
+                  vm.startBroadcast();
+                  x = new X1();
+                  vm.stopBroadcast();
+              }
+          }
+          EOF
+
+      - name: Build contract
+        run: forge build
+
+      - name: Deploy Contract
+        run: |
+          forge script script/Counter.s.sol:CounterScript \
+          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          --broadcast
