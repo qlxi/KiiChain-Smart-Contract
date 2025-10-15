@@ -1,90 +1,26 @@
-name: "CX"
+name: "D"
 
 on:
   push:
     branches: ["m"]
   workflow_dispatch:
-  schedule:
-    - cron: "0 */12 * * *"
 
 jobs:
-  x:
+  j:
     runs-on: "ubuntu-latest"
     steps:
-      - name: "a1"
-        uses: "actions/checkout@v4"
-
-      - name: "a2"
-        uses: "foundry-rs/foundry-toolchain@v1"
-        with:
-          version: "nightly"
-
-      - name: "a3"
-        run: |
-          m1() {
-            local z=$1
-            local c=$2
-            mkdir -p "${z}"
-            cat > "${z}/${c}" << 'EOR'
-          // SPDX-License-Identifier: UNLICENSED
+      - uses: "actions/checkout@v4"
+      - uses: "foundry-rs/foundry-toolchain@v1"
+      - run: |
+          mkdir s sc
+          echo '// SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
-
-          contract A {
-            uint256 public b;
-            function c(uint256 d) public { b = d; }
-            function e() public { b++; }
-            function f() public view returns (uint256) { return b; }
-          }
-          EOR
-          }
-          m2() {
-            local z=$1
-            local c=$2
-            mkdir -p "${z}"
-            cat > "${z}/${c}" << 'EOR'
-          // SPDX-License-Identifier: UNLICENSED
+          contract K{uint256 p;function s(uint256 x)public{p=x;}function i()public{p++;}function g()public view returns(uint256){return p;}}' > s/K.sol
+          echo '// SPDX-License-Identifier: UNLICENSED
           pragma solidity ^0.8.13;
-          import {Script as S, console as C} from "forge-std/Script.sol";
-          import {A as B} from "../src/X.sol";
-          contract D is S {
-            B public g;
-            function setUp() public {}
-            function run() public {
-              vm.startBroadcast();
-              g = new B();
-              C.log("H:", address(g));
-              vm.stopBroadcast();
-            }
-          }
-          EOR
-          }
-          m1 "src" "X.sol"
-          m2 "script" "Y.s.sol"
-
-      - name: "a4"
-        run: |
-          cat > f.toml << 'EOX'
-          [p.d]
-          s = "src"
-          o = "out"
-          l = ["lib"]
-          [r.e]
-          t = "https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/"
-          EOX
-
-      - name: "a5"
-        run: forge install foundry-rs/forge-std --no-commit
-
-      - name: "a6"
-        run: forge build
-
-      - name: "a7"
-        run: |
-          forge script script/Y.s.sol:D \
-            --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-            --broadcast \
-            -vvv
-
-      - name: "a8"
-        run: echo "OK"
+          import {Script,console} from "forge-std/Script.sol";
+          import {K} from "../s/K.sol";
+          contract L is Script{K k;function r() public{vm.startBroadcast();k=new K();console.log("A:",address(k));vm.stopBroadcast();}}' > sc/M.s.sol
+      - run: forge install foundry-rs/forge-std
+      - run: forge build
+      - run: forge script sc/M.s.sol:L --rpc-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} --broadcast
