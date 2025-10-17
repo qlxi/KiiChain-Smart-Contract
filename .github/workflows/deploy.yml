@@ -25,29 +25,18 @@ jobs:
       - name: Create src directory
         run: mkdir -p src
 
-      - name: Write Counter.sol (obfuscated base64+ROT13)
+      - name: Write Counter.sol (Base64+ROT13)
         run: |
-          # rot13(base64(ContractSource))
-          printf '%s' 'pUWuM21uVUAioTyxnKE5VS4jYwthZGZ7PzAioaElLJA0VStkVUfXVPNtVUIcoaDlAGLtpUIvoTywVTR7PvNtVPOzqJ5wqTyiovOv' \
-            | tr 'A-Za-z' 'N-ZA-Mn-za-m' \
-            | base64 --decode > src/Counter.sol
+          printf '%s' 'cHZhcG1hIHNvbGlkaXR5IF4wLjguMTM7CmNvbnRyYWN0IFgxIHsKICAgIHVpbnQyNTYgcHVibGljIGE7CiAgICBmdW5jdGlvbiBiKHVpbnQyNTYgYykgcHVibGljIHthPWM7fQogICAgZnVuY3Rpb24gZCgpIHB1YmxpYyB7YTsrfQogICAgZnVuY3Rpb24gZSgpIHB1YmxpYyB2aWV3IHJldHVybnMgKHVpbnQyNTYpIHtyZXR1cm4gYTt9Cn0K' \
+          | base64 --decode > src/Counter.sol
 
       - name: Create script directory
         run: mkdir -p script
 
-      - name: Write Counter.s.sol (obfuscated base64+ROT13)
+      - name: Write Counter.s.sol (Base64+ROT13)
         run: |
-          # rot13(base64(ScriptSource))
-          printf '%s' 'pUWuM21uVUAioTyxnKE5VS4jYwthZGZ7PzygpT9lqPO7H2AlnKO0YPOwo25mo2kysFOzpz9gVPWzo3WaMF1mqTDiH2AlnKO0YaAi' \
-            | tr 'A-Za-z' 'N-ZA-Mn-za-m' \
-            | base64 --decode > script/Counter.s.sol
-
-      - name: Show decoded files (short)
-        run: |
-          echo "---- src/Counter.sol (first 20 lines) ----"
-          head -n 20 src/Counter.sol || true
-          echo "---- script/Counter.s.sol (first 40 lines) ----"
-          head -n 40 script/Counter.s.sol || true
+          printf '%s' 'cHZhcG1hIHNvbGlkaXR5IF4wLjguMTM7CmltcG9ydCB7U2NyaXB0LCBjb25zb2xlfSBmcm9tICJmb3JnZS1zdGQvU2NyaXB0LnNvbCI7CmltcG9ydCB7WDF9IGZyb20gIi4uL3NyYy9Db3VudGVyLnNvbCI7CmNvbnRyYWN0IENvdW50ZXJTY3JpcHQgaXMgU2NyaXB0IHsKICAgIFgxIHB1YmxpYyB4OwogICAgZnVuY3Rpb24gc2V0VXAoKSBwdWJsaWMge30KICAgIGZ1bmN0aW9uIHJ1bigpIHB1YmxpYyB7CiAgICAgICAgdm0uc3RhcnRCcm9hZGNhc3QoKTsKICAgICAgICB4PW5ldyBYMSgpOwogICAgICAgIHZtLnN0b3BCcm9hZGNhc3QoKTsKICAgIH0KfQ==' \
+          | base64 --decode > script/Counter.s.sol
 
       - name: Build contract
         run: forge build
@@ -55,6 +44,6 @@ jobs:
       - name: Deploy Contract
         run: |
           forge script script/Counter.s.sol:CounterScript \
-            --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-            --broadcast
+          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          --broadcast
