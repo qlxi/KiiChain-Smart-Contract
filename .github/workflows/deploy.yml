@@ -1,38 +1,79 @@
 name: Deploy Contract
-on:
-push:
-branches: [main]
-workflow_dispatch:
-schedule:
 
-cron: '0 */12 * * *'  # Every 12 hours
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # Every 12 hours
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
-steps:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-uses: actions/checkout@v4
-name: Install Foundry
-uses: foundry-rs/foundry-toolchain@v1
-with:
-version: nightly
-name: Install dependencies
-run: echo "Zm9yZ2UgaW5zdGFsbCBmb3VuZHJ5LXJzL2ZvcmdlLXN0ZApmb3JnZSByZW1hcHBpbmdzID4gcmVtYXBwaW5ncy50eHQ=" | base64 -d | bash
-name: Create contract file
-run: |
-mkdir -p src
-echo "cHJhZ21hIHNvbGlkaXR5IF4wLjguMTM7Cgpjb250cmFjdCBYMSB7CiAgICB1aW50MjU2IHB1YmxpYyBhOwoKICAgIGZ1bmN0aW9uIGIodWludDI1NiBjKSBwdWJsaWMgewogICAgICAgIGFzc2VtYmx5IHsKICAgICAgICAgICAgbGV0IG9iZnVzYzEgOj0gbXVsKGMsIDEpCiAgICAgICAgICAgIGxldCBvYmZ1c2MyIDo9IGFkZChvYmZ1c2MxLCAwKQogICAgICAgICAgICBsZXQgY2hlY2sgOj0geG9yKG9iZnVzYzIsIDApCiAgICAgICAgICAgIGlmIGVxKGNoZWNrLCBvYmZ1c2MyKSB7CiAgICAgICAgICAgICAgICBzc3RvcmUoYS5zbG90LCBvYmZ1c2MyKQogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgcmV2ZXJ0KDAsIDApCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gZCgpIHB1YmxpYyB7CiAgICAgICAgYXNzZW1ibHkgewogICAgICAgICAgICBsZXQgdmFsIDo9IHNsb2FkKGEuc2xvdCkKICAgICAgICAgICAgbGV0IG9uZSA6PSBzdWIoMiwxKQogICAgICAgICAgICBsZXQgbmV3dmFsIDo9IGFkZCh2YWwsIG9uZSkKICAgICAgICAgICAgbGV0IHZlcmlmeSA6PSBzdWIobmV3dmFsLCB2YWwpCiAgICAgICAgICAgIGlmIGVxKHZlcmlmeSwgb25lKSB7CiAgICAgICAgICAgICAgICBzc3RvcmUoYS5zbG90LCBuZXd2YWwpCiAgICAgICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgICAgICByZXZlcnQoMCwgMCkKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KCiAgICBmdW5jdGlvbiBlKCkgcHVibGljIHZpZXcgcmV0dXJucyAodWludDI1NikgewogICAgICAgIGFzc2VtYmx5IHsKICAgICAgICAgICAgbGV0IHZhbCA6PSBzbG9hZChhLnNsb3QpCiAgICAgICAgICAgIGxldCB0ZW1wIDo9IG11bCh2YWwsIDEpCiAgICAgICAgICAgIGxldCBjaGVjayA6PSB4b3IodGVtcCwgMCkKICAgICAgICAgICAgaWYgZXEoY2hlY2ssIHRlbXApIHsKICAgICAgICAgICAgICAgIG1zdG9yZSgweDAwLCB0ZW1wKQogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgcmV2ZXJ0KDAsIDApCiAgICAgICAgICAgIH0KICAgICAgICAgICAgcmV0dXJuKDB4MDAsIDB4MjApCiAgICAgICAgfQogICAgfQp9Cg==" | base64 -d > src/Counter.sol
-name: Create script file
-run: |
-mkdir -p script
-echo "cHJhZ21hIHNvbGlkaXR5IF4wLjguMTM7CgppbXBvcnQge1NjcmlwdCwgY29uc29sZX0gZnJvbSAiZm9yZ2Utc3RkL1NjcmlwdC5zb2wiOwppbXBvcnQge1gxfSBmcm9tICIuLi9zcmMvQ291bnRlci5zb2wiOwoKY29udHJhY3QgQ291bnRlclNjcmlwdCBpcyBTY3JpcHQgewogICAgWDEgcHVibGljIHg7CgogICAgZnVuY3Rpb24gc2V0VXAoKSBwdWJsaWMge30KCiAgICBmdW5jdGlvbiBydW4oKSBwdWJsaWMgewogICAgICAgIHZtLnN0YXJ0QnJvYWRjYXN0KCk7CiAgICAgICAgYnl0ZXMgbWVtb3J5IGJ5dGVjb2RlID0gdHlwZShYMSkuY3JlYXRpb25CeXRlY29kZTsKICAgICAgICBhZGRyZXNzIGRlcGxveWVkOwogICAgICAgIGFzc2VtYmx5IHsKICAgICAgICAgICAgZGVwbG95ZWQgOj0gY3JlYXRlKDAsIGFkZChieXRlY29kZSwgMHgyMCksIG1sb2FkKGJ5dGVjb2RlKSkKICAgICAgICB9CiAgICAgICAgeCA9IFgxKGRlcGxveWVkKTsKICAgICAgICB2bS5zdG9wQnJvYWRjYXN0KCk7CiAgICB9Cn0K" | base64 -d > script/Counter.s.sol
-name: Build contract
-run: echo "Zm9yZ2UgYnVpbGQ=" | base64 -d | bash
-name: Deploy Contract
-run: |
-URL="aHR0cHM6Ly9qc29uLXJwYy51bm8uc2VudHJ5LnRlc3RuZXQudjMua2lpdmFsaWRhdG9yLmNvbS8="
-forge script script/Counter.s.sol:CounterScript 
---fork-url $(echo $URL | base64 -d) 
---private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} 
---broadcast
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: |
+          forge install foundry-rs/forge-std
+          forge remappings > remappings.txt
+
+      - name: Create contract file
+        run: |
+          mkdir -p src
+          cat > src/Counter.sol << 'EOF'
+          pragma solidity ^0.8.13;
+
+          contract X1 {
+              uint256 public a;
+
+              function b(uint256 c) public {
+                  a = c;
+              }
+
+              function d() public {
+                  a++;
+              }
+
+              function e() public view returns (uint256) {
+                  return a;
+              }
+          }
+          EOF
+
+      - name: Create script file
+        run: |
+          mkdir -p script
+          cat > script/Counter.s.sol << 'EOF'
+          pragma solidity ^0.8.13;
+
+          import {Script, console} from "forge-std/Script.sol";
+          import {X1} from "../src/Counter.sol";
+
+          contract CounterScript is Script {
+              X1 public x;
+
+              function setUp() public {}
+
+              function run() public {
+                  vm.startBroadcast();
+                  x = new X1();
+                  vm.stopBroadcast();
+              }
+          }
+          EOF
+
+      - name: Build contract
+        run: forge build
+
+      - name: Deploy Contract
+        run: |
+          forge script script/Counter.s.sol:CounterScript \
+          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
+          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          --broadcast
