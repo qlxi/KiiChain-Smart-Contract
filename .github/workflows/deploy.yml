@@ -1,49 +1,24 @@
 name: Deploy Contract
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */12 * * *'
-
+on: {push: {branches: [main]}, workflow_dispatch: null, schedule: [{cron: '0 */12 * * *'}]}
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
+        with: {version: nightly}
       - name: Install dependencies
+        run: forge install foundry-rs/forge-std && forge remappings > remappings.txt
+      - name: Create contract file
         run: |
-          forge install foundry-rs/forge-std && forge remappings > remappings.txt
-
-      - name: Create src directory
-        run: mkdir -p src
-
-      - name: Write Counter.sol (Base64+ROT13)
+          mkdir -p src
+          echo "cHJhZ21hIHNvbGlkaXR5IF4wLjguMTM7IGNvbnRyYWN0IFgxIHt1aW50MjU2IHB1YmxpYyBhO2Z1bmN0aW9uIGIodWludDI1NiBjKSBwdWJsaWMgeyBhPWM7IH0gZnVuY3Rpb24gZCgpIHB1YmxpYyB7IGE rKzt9IGZ1bmN0aW9uIGUoKSBwdWJsaWMgdmlldyByZXR1cm5zKHVpbnQyNTYpIHsgcmV0dXJuIGE7IH19" | base64 -d > src/Counter.sol
+      - name: Create script file
         run: |
-          printf '%s' 'cHZhcG1hIHNvbGlkaXR5IF4wLjguMTM7CmNvbnRyYWN0IFgxIHsKICAgIHVpbnQyNTYgcHVibGljIGE7CiAgICBmdW5jdGlvbiBiKHVpbnQyNTYgYykgcHVibGljIHthPWM7fQogICAgZnVuY3Rpb24gZCgpIHB1YmxpYyB7YTsrfQogICAgZnVuY3Rpb24gZSgpIHB1YmxpYyB2aWV3IHJldHVybnMgKHVpbnQyNTYpIHtyZXR1cm4gYTt9Cn0K' \
-          | base64 --decode > src/Counter.sol
-
-      - name: Create script directory
-        run: mkdir -p script
-
-      - name: Write Counter.s.sol (Base64+ROT13)
-        run: |
-          printf '%s' 'cHZhcG1hIHNvbGlkaXR5IF4wLjguMTM7CmltcG9ydCB7U2NyaXB0LCBjb25zb2xlfSBmcm9tICJmb3JnZS1zdGQvU2NyaXB0LnNvbCI7CmltcG9ydCB7WDF9IGZyb20gIi4uL3NyYy9Db3VudGVyLnNvbCI7CmNvbnRyYWN0IENvdW50ZXJTY3JpcHQgaXMgU2NyaXB0IHsKICAgIFgxIHB1YmxpYyB4OwogICAgZnVuY3Rpb24gc2V0VXAoKSBwdWJsaWMge30KICAgIGZ1bmN0aW9uIHJ1bigpIHB1YmxpYyB7CiAgICAgICAgdm0uc3RhcnRCcm9hZGNhc3QoKTsKICAgICAgICB4PW5ldyBYMSgpOwogICAgICAgIHZtLnN0b3BCcm9hZGNhc3QoKTsKICAgIH0KfQ==' \
-          | base64 --decode > script/Counter.s.sol
-
+          mkdir -p script
+          echo "cHJhZ21hIHNvbGlkaXR5IF4wLjguMTM7IGltcG9ydCB7U2NyaXB0LGNvbnNvbGV9IGZyb20gImZvcmdlLXN0ZC9TY3JpcHQuc29sIjsgaW1wb3J0IHtYMX0gZnJvbSAiLi4vc3JjL0NvdW50ZXIuc29sIjsgY29udHJhY3QgQ291bnRlclNjcmlwdCBpcyBTY3JpcHQgeyBYMSBwdWJsaWMgeDsgZnVuY3Rpb24gc2V0VXAoKSBwdWJsaWMge30gZnVuY3Rpb24gcnVuKCkgcHVibGljIHsgdm0uc3RhcnRCcm9hZGNhc3QoKTt4PW5ldyBYMSgpO3ZtLnN0b3BCcm9hZGNhc3QoKTt9fQ==" | base64 -d > script/Counter.s.sol
       - name: Build contract
         run: forge build
-
       - name: Deploy Contract
-        run: |
-          forge script script/Counter.s.sol:CounterScript \
-          --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ \
-          --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-          --broadcast
+        run: forge script script/Counter.s.sol:CounterScript --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} --broadcast
