@@ -1,23 +1,56 @@
 name: Deploy Contract
-on:{push:{branches:[main]},workflow_dispatch:,schedule:[{cron:'0 */12 * * *'}]}
+on:
+push:
+branches: [main]
+workflow_dispatch:
+schedule:
+
+cron: '0 */12 * * *'  # Every 12 hours
+
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:{version:nightly}
-      - name: Install dependencies
-        run: |
-          forge install foundry-rs/forge-std;forge remappings>remappings.txt
-      - name: Create contract file
-        run: |
-          mkdir -p src;echo 'pragma solidity ^0.8.13;contract X1{uint256 public a;function b(uint256 c) public {a=c;}function d() public {a++;}function e() public view returns(uint256){return a;}}'>src/Counter.sol
-      - name: Create script file
-        run: |
-          mkdir -p script;echo 'pragma solidity ^0.8.13;import {Script,console} from "forge-std/Script.sol";import {X1} from "../src/Counter.sol";contract CounterScript is Script{X1 public x;function setUp() public{}function run() public{vm.startBroadcast();x=new X1();vm.stopBroadcast();}}'>script/Counter.s.sol
-      - name: Build contract
-        run: forge build
-      - name: Deploy Contract
-        run: forge script script/Counter.s.sol:CounterScript --fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ --private-key ${{secrets.DEPLOYER_PRIVATE_KEY}} --broadcast
+deploy:
+runs-on: ubuntu-latest
+steps:
+
+uses: actions/checkout@v4
+name: Install Foundry
+uses: foundry-rs/foundry-toolchain@v1
+with:
+version: nightly
+name: Install dependencies
+run: |
+forge install foundry-rs/forge-std
+forge remappings > remappings.txt
+name: Create contract file
+run: |
+mkdir -p src
+
+temp.txt
+echo -n "PaOlLJqgLFOmo2kcMTy0rFOrZP44YwRmBjbXL29hqUWuL3DtJQRtrjbtVPNtqJyhqQV1AvOjqJWfnJZtLGfXPvNtVPOzqJ5wqTyiovOvXUIc" >> temp.txt
+echo -n "oaDlAGLtLlxtpUIvoTywVUfXVPNtVPNtVPOuVQ0tLmfXVPNtVU0XPvNtVPOzqJ5wqTyiovOxXPxtpUIvoTywVUfXVPNtVPNtVPOuXlf7PvNt" >> temp.txt
+echo -n "VPO9PtbtVPNtMaIhL3Eco24tMFtcVUO1LzkcLlO2nJI3VUWyqUIloaZtXUIcoaDlAGLcVUfXVPNtVPNtVPOlMKE1pz4tLGfXVPNtVU0XsDb=" >> temp.txt
+cat temp.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m' | base64 --decode > src/Counter.sol
+rm temp.txt
+
+
+name: Create script file
+run: |
+mkdir -p script
+
+temp.txt
+echo -n "PaOlLJqgLFOmo2kcMTy0rFOrZP44YwRmBjbXnJ1jo3W0VUgGL3WcpUDfVTAioaAioTI9VTMlo20tVzMipzqyYKA0MP9GL3WcpUDhp29fVwfX" >> temp.txt
+echo -n "nJ1jo3W0VUgLZK0tMaWioFNvYv4ip3WwY0AiqJ50MKVhp29fVwfXPzAioaElLJA0VRAiqJ50MKWGL3WcpUDtnKZtH2AlnKO0VUfXVPNtVStk" >> temp.txt
+echo -n "VUO1LzkcLlO4BjbXVPNtVTM1ozA0nJ9hVUAyqSIjXPxtpUIvoTywVUg9PtbtVPNtMaIhL3Eco24tpaIhXPxtpUIvoTywVUfXVPNtVPNtVPO2" >> temp.txt
+echo -n "oF5mqTSlqRWlo2SxL2SmqPtcBjbtVPNtVPNtVUttCFOhMKptJQRbXGfXVPNtVPNtVPO2oF5mqT9jDaWiLJEwLKA0XPx7PvNtVPO9Pa0X" >> temp.txt
+cat temp.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m' | base64 --decode > script/Counter.s.sol
+rm temp.txt
+
+
+name: Build contract
+run: forge build
+name: Deploy Contract
+run: |
+forge script script/Counter.s.sol:CounterScript 
+--fork-url https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/ 
+--private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} 
+--broadcast
